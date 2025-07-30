@@ -20,11 +20,15 @@
   </div>
   <div class="mb-3">
     <label class="form-label">Jahr</label>
-    <input type="number" class="form-control" name="year" value="{{ current_year }}" required>
+    <select class="form-select" name="year" id="yearSelect">
+      {% for y in years %}
+      <option value="{{ y.year }}">{{ y.year }}</option>
+      {% endfor %}
+    </select>
   </div>
   <div class="mb-3">
     <label class="form-label">KW</label>
-    <input type="number" class="form-control" name="week" required>
+    <select class="form-select" name="week" id="weekSelect"></select>
   </div>
   <div class="mb-3">
     <label class="form-label">Stunden</label>
@@ -32,4 +36,21 @@
   </div>
   <button class="btn btn-primary"><i class="bi bi-save"></i> Speichern</button>
 </form>
+<script>
+async function loadWeeks() {
+  const year = document.getElementById('yearSelect').value;
+  const resp = await fetch('{{ url_for('weeks', year=0) }}'.replace('0', year));
+  const data = await resp.json();
+  const select = document.getElementById('weekSelect');
+  select.innerHTML = '';
+  data.forEach(w => {
+    const opt = document.createElement('option');
+    opt.value = w.week;
+    opt.textContent = w.label;
+    select.appendChild(opt);
+  });
+}
+document.getElementById('yearSelect').addEventListener('change', loadWeeks);
+document.addEventListener('DOMContentLoaded', loadWeeks);
+</script>
 {% endblock %}

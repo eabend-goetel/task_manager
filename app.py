@@ -1,6 +1,6 @@
 import os
-from datetime import datetime
-from flask import Flask, render_template, request, redirect, url_for
+from datetime import datetime, date
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 DB_FILE = 'app.db'
@@ -47,6 +47,20 @@ class Planning(db.Model):
 
     task = db.relationship('Task')
     worker = db.relationship('Worker')
+
+class PlanYear(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    year = db.Column(db.Integer, nullable=False, unique=True)
+
+    @property
+    def name(self):
+        return str(self.year)
+
+with app.app_context():
+    db.create_all()
+    if PlanYear.query.count() == 0:
+        db.session.add(PlanYear(year=datetime.now().year))
+        db.session.commit()
 
 # Initialize DB with some defaults
 # @app.before_request
@@ -144,7 +158,8 @@ def planning_new():
         return redirect(url_for('planning'))
     tasks = Task.query.all()
     workers = Worker.query.all()
-    return render_template('planning_form.html', tasks=tasks, workers=workers)
+    years = PlanYear.query.order_by(PlanYear.year).all()
+    return render_template('planning_form.html', tasks=tasks, workers=workers, years=years)
 
 @app.route('/planning/delete/<int:item_id>', methods=['POST'])
 def planning_delete(item_id):
@@ -152,6 +167,18 @@ def planning_delete(item_id):
     db.session.delete(item)
     db.session.commit()
     return redirect(url_for('planning'))
+
+
+@app.route('/weeks/<int:year>')
+def weeks(year):
+    total_weeks = date(year, 12, 28).isocalendar()[1]
+    result = []
+    for w in range(1, total_weeks + 1):
+        start = date.fromisocalendar(year, w, 1)
+        end = date.fromisocalendar(year, w, 7)
+        label = f"KW{w:02d} - {start.strftime('%d.%m.')} bis {end.strftime('%d.%m.') }"
+        result.append({'week': w, 'label': label})
+    return jsonify(result)
 
 @app.route('/masterdata', methods=['GET', 'POST'])
 def masterdata():
@@ -165,12 +192,15 @@ def masterdata():
             db.session.add(Priority(name=name, color=color or 'primary'))
         elif table == 'status':
             db.session.add(Status(name=name, color=color or 'secondary'))
+        elif table == 'year':
+            db.session.add(PlanYear(year=int(name)))
         db.session.commit()
         return redirect(url_for('masterdata'))
     workers = Worker.query.all()
     priorities = Priority.query.all()
     statuses = Status.query.all()
-    return render_template('masterdata.html', workers=workers, priorities=priorities, statuses=statuses)
+    years = PlanYear.query.order_by(PlanYear.year).all()
+    return render_template('masterdata.html', workers=workers, priorities=priorities, statuses=statuses, years=years)
 
 @app.route('/masterdata/edit/<table>/<int:item_id>', methods=['GET', 'POST'])
 def masterdata_edit(table, item_id):
@@ -178,13 +208,17 @@ def masterdata_edit(table, item_id):
         'worker': Worker,
         'priority': Priority,
         'status': Status,
+        'year': PlanYear,
     }
     model = model_map.get(table)
     if not model:
         return redirect(url_for('masterdata'))
     item = model.query.get_or_404(item_id)
     if request.method == 'POST':
-        item.name = request.form['name']
+        if table == 'year':
+            item.year = int(request.form['name'])
+        else:
+            item.name = request.form['name']
         if hasattr(item, 'color'):
             color = request.form.get('color') or ('primary' if table == 'priority' else 'secondary')
             item.color = color
@@ -198,6 +232,7 @@ def masterdata_delete(table, item_id):
         'worker': Worker,
         'priority': Priority,
         'status': Status,
+        'year': PlanYear,
     }
     model = model_map.get(table)
     if not model:
