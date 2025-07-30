@@ -172,5 +172,40 @@ def masterdata():
     statuses = Status.query.all()
     return render_template('masterdata.html', workers=workers, priorities=priorities, statuses=statuses)
 
+@app.route('/masterdata/edit/<table>/<int:item_id>', methods=['GET', 'POST'])
+def masterdata_edit(table, item_id):
+    model_map = {
+        'worker': Worker,
+        'priority': Priority,
+        'status': Status,
+    }
+    model = model_map.get(table)
+    if not model:
+        return redirect(url_for('masterdata'))
+    item = model.query.get_or_404(item_id)
+    if request.method == 'POST':
+        item.name = request.form['name']
+        if hasattr(item, 'color'):
+            color = request.form.get('color') or ('primary' if table == 'priority' else 'secondary')
+            item.color = color
+        db.session.commit()
+        return redirect(url_for('masterdata'))
+    return render_template('masterdata_form.html', table=table, item=item)
+
+@app.route('/masterdata/delete/<table>/<int:item_id>', methods=['POST'])
+def masterdata_delete(table, item_id):
+    model_map = {
+        'worker': Worker,
+        'priority': Priority,
+        'status': Status,
+    }
+    model = model_map.get(table)
+    if not model:
+        return redirect(url_for('masterdata'))
+    item = model.query.get_or_404(item_id)
+    db.session.delete(item)
+    db.session.commit()
+    return redirect(url_for('masterdata'))
+
 if __name__ == '__main__':
     app.run(debug=True)

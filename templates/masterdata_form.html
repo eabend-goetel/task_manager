@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Stammdaten bearbeiten</h1>
+<form method="post">
+  <div class="mb-3">
+    <label class="form-label">Name</label>
+    <input type="text" class="form-control" name="name" value="{{ item.name }}" required>
+  </div>
+  {% if table != 'worker' %}
+  <div class="mb-3">
+    <label class="form-label">Farbe</label>
+    <input type="text" class="form-control" name="color" value="{{ item.color }}">
+  </div>
+  {% endif %}
+  <button class="btn btn-primary"><i class="bi bi-save"></i> Speichern</button>
+  <a href="{{ url_for('masterdata') }}" class="btn btn-secondary">Abbrechen</a>
+</form>
+{% endblock %}
