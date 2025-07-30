@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Stammdaten</h2>
+<form method="post" class="row g-3">
+<div class="col-auto">
+<select name="table" class="form-select">
+  <option value="person">Bearbeiter</option>
+  <option value="priority">Prio</option>
+  <option value="status">Status</option>
+</select>
+</div>
+<div class="col-auto">
+<input name="name" class="form-control" placeholder="Name">
+</div>
+<div class="col-auto">
+<input name="color" class="form-control" placeholder="Farbe (Bootstrap Klasse)">
+</div>
+<div class="col-auto">
+<button class="btn btn-primary"><i class="bi bi-save"></i></button>
+</div>
+</form>
+{% endblock %}

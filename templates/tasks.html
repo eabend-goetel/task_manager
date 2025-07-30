@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Aufgaben</h2>
+<a href="{{ url_for('edit_task') }}" class="btn btn-success mb-2"><i class="bi bi-plus"></i> Neu</a>
+<table class="table table-hover" id="taskTable">
+<tr><th>Projekt</th><th>Beschreibung</th><th>Verantwortlicher</th><th>Prio</th><th>Status</th><th>Fällig</th><th></th></tr>
+{% for t in tasks %}
+<tr ondblclick="location.href='{{ url_for('edit_task',task_id=t.id) }}'" class="table-{{ t.priority.color if t.priority else '' }}">
+  <td>{{t.project}}</td>
+  <td>{{t.description}}</td>
+  <td>{{t.responsible.name if t.responsible else ''}}</td>
+  <td>{{t.priority.name if t.priority else ''}}</td>
+  <td class="table-{{ t.status.color if t.status else '' }}">{{t.status.name if t.status else ''}}</td>
+  <td>{{t.due_date}}</td>
+  <td>
+    <form action="{{ url_for('delete_task',task_id=t.id) }}" method="post" onsubmit="return confirm('Löschen?')">
+      <button class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
+    </form>
+  </td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}

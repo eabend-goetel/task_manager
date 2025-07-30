@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Dashboard</h2>
+<form class="row row-cols-lg-auto g-3 align-items-center mb-3">
+  <div class="col-12">
+    <label class="form-label">KW</label>
+    <input type="number" class="form-control" name="kw" value="{{ kw or '' }}">
+  </div>
+  <div class="col-12">
+    <label class="form-label">Bearbeiter</label>
+    <select class="form-select" name="person">
+      <option value="">Alle</option>
+      {% for p in persons %}
+      <option value="{{p.id}}">{{p.name}}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-12">
+    <button class="btn btn-primary"><i class="bi bi-search"></i></button>
+  </div>
+</form>
+<table class="table table-sm">
+  <tr><th>Projekt</th><th>Beschreibung</th><th>Bearbeiter</th><th>Prio</th><th>Status</th><th>Fällig</th></tr>
+  {% for t in tasks %}
+  <tr class="table-{{ t.priority.color if t.priority else '' }}">
+    <td>{{t.project}}</td>
+    <td>{{t.description}}</td>
+    <td>{{t.responsible.name if t.responsible else ''}}</td>
+    <td>{{t.priority.name if t.priority else ''}}</td>
+    <td class="table-{{ t.status.color if t.status else '' }}">{{t.status.name if t.status else ''}}</td>
+    <td>{{t.due_date}}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% if workload %}
+<h3>Auslastung KW {{kw}}</h3>
+<table class="table">
+<tr><th>Name</th><th>Stunden</th></tr>
+{% for w in workload %}
+<tr class="{% if w.over %}table-danger{% endif %}"><td>{{w.name}}</td><td>{{w.hours}}</td></tr>
+{% endfor %}
+</table>
+{% endif %}
+{% endblock %}
