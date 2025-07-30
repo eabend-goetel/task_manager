@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Aufgaben</h1>
+<a href="{{ url_for('task_new') }}" class="btn btn-primary mb-3"><i class="bi bi-plus"></i> Neu</a>
+<table class="table table-sm">
+  <thead>
+    <tr>
+      <th>Projekt</th>
+      <th>Beschreibung</th>
+      <th>Bearbeiter</th>
+      <th>Prio</th>
+      <th>Status</th>
+      <th>Fälligkeit</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for t in tasks %}
+    <tr class="table-{{ t.priority.color }}">
+      <td>{{ t.project }}</td>
+      <td>{{ t.description }}</td>
+      <td>{{ t.responsible.name if t.responsible else '' }}</td>
+      <td>{{ t.priority.name if t.priority else '' }}</td>
+      <td>{{ t.status.name if t.status else '' }}</td>
+      <td>{{ t.due_date or '' }}</td>
+      <td>
+        <a href="{{ url_for('task_edit', task_id=t.id) }}" class="btn btn-sm btn-secondary"><i class="bi bi-pencil"></i></a>
+        <form action="{{ url_for('task_delete', task_id=t.id) }}" method="post" style="display:inline" onsubmit="return confirm('Löschen?');">
+          <button class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

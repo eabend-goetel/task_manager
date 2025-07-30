@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Dashboard</h1>
+<table class="table table-sm">
+  <thead>
+    <tr>
+      <th>Projekt</th>
+      <th>Beschreibung</th>
+      <th>Bearbeiter</th>
+      <th>Prio</th>
+      <th>Status</th>
+      <th>Fälligkeit</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for t in tasks %}
+    <tr class="table-{{ t.priority.color }}">
+      <td>{{ t.project }}</td>
+      <td>{{ t.description }}</td>
+      <td>{{ t.responsible.name if t.responsible else '' }}</td>
+      <td>{{ t.priority.name if t.priority else '' }}</td>
+      <td>{{ t.status.name if t.status else '' }}</td>
+      <td>{{ t.due_date or '' }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

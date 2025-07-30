@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Stammdaten</h1>
+<form method="post" class="row g-3">
+  <div class="col-md-3">
+    <select class="form-select" name="table">
+      <option value="worker">Bearbeiter</option>
+      <option value="priority">Prio</option>
+      <option value="status">Status</option>
+    </select>
+  </div>
+  <div class="col-md-3">
+    <input type="text" class="form-control" name="name" placeholder="Name" required>
+  </div>
+  <div class="col-md-3">
+    <input type="text" class="form-control" name="color" placeholder="Farbe (Bootstrap)">
+  </div>
+  <div class="col-md-3">
+    <button class="btn btn-primary"><i class="bi bi-plus"></i> Hinzufügen</button>
+  </div>
+</form>
+<div class="row mt-4">
+  <div class="col-md-4">
+    <h3>Bearbeiter</h3>
+    <ul>
+    {% for w in workers %}<li>{{ w.name }}</li>{% endfor %}
+    </ul>
+  </div>
+  <div class="col-md-4">
+    <h3>Prio</h3>
+    <ul>
+    {% for p in priorities %}<li>{{ p.name }} ({{ p.color }})</li>{% endfor %}
+    </ul>
+  </div>
+  <div class="col-md-4">
+    <h3>Status</h3>
+    <ul>
+    {% for s in statuses %}<li>{{ s.name }} ({{ s.color }})</li>{% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}
