@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Wochenplanung</h1>
+<a href="{{ url_for('planning_new') }}" class="btn btn-primary mb-3"><i class="bi bi-plus"></i> Neu</a>
+<table class="table table-sm">
+  <thead>
+    <tr>
+      <th>Aufgabe</th>
+      <th>Bearbeiter</th>
+      <th>Jahr</th>
+      <th>KW</th>
+      <th>Stunden</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for p in items %}
+    <tr>
+      <td>{{ p.task.project if p.task else '' }}</td>
+      <td>{{ p.worker.name if p.worker else '' }}</td>
+      <td>{{ p.year }}</td>
+      <td>{{ p.week }}</td>
+      <td>{{ p.hours }}</td>
+      <td>
+        <form action="{{ url_for('planning_delete', item_id=p.id) }}" method="post" style="display:inline" onsubmit="return confirm('Löschen?');">
+          <button class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
