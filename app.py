@@ -49,14 +49,14 @@ class Planning(db.Model):
     worker = db.relationship('Worker')
 
 # Initialize DB with some defaults
-@app.before_first_request
-def init_db():
-    if not os.path.exists(DB_FILE):
-        db.create_all()
-        db.session.add(Worker(name='Max Mustermann'))
-        db.session.add(Priority(name='Normal', color='primary'))
-        db.session.add(Status(name='Offen', color='secondary'))
-        db.session.commit()
+# @app.before_request
+# def init_db():
+#     if not os.path.exists(DB_FILE):
+#         db.create_all()
+#         db.session.add(Worker(name='Max Mustermann'))
+#         db.session.add(Priority(name='Normal', color='primary'))
+#         db.session.add(Status(name='Offen', color='secondary'))
+#         db.session.commit()
 
 # Routes
 @app.route('/')
